@@ -20,6 +20,7 @@ a {
   max-width: 1400px;
   margin: auto;
   width: 100%;
+  overflow-x: hidden;
 }
 .layout {
   padding: 10px;
@@ -192,6 +193,7 @@ span.text-red {
   text-transform: uppercase;
 }
 .hero-banner-image {
+  margin-top: 2rem;
   position: absolute;
   top: 0%;
   right: 20%;

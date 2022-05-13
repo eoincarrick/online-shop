@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { UrlFor } from '../library/client';
+import { urlFor } from '../library/client';
 
 const HeroBanner = ({ bannerData }) => {
   console.log(bannerData);
@@ -12,7 +12,7 @@ const HeroBanner = ({ bannerData }) => {
           <h3>{bannerData.midText}</h3>
           <h1>{bannerData.largeText1}</h1>
           <img
-            src={UrlFor(bannerData.image)}
+            src={urlFor(bannerData.image)}
             alt='sneakers'
             className='hero-banner-image'
           />
@@ -31,6 +31,5 @@ const HeroBanner = ({ bannerData }) => {
     </div>
   );
 };
-
 
 export default HeroBanner;
