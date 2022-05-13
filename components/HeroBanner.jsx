@@ -1,13 +1,17 @@
 import Link from 'next/link';
 
-const HeroBanner = () => {
+import { UrlFor } from '../library/client';
+
+const HeroBanner = ({ bannerData }) => {
+  console.log(bannerData);
   return (
     <div className='hero-banner-container'>
       <div>
-        <p className='beats-solo'>SMALL TEXT</p>
+        <p className='beats-solo'>{bannerData.smallText}</p>
         <div>
-          <h3>MID TEXT</h3>
-          <img src='' alt='sneakers' className='hero-banner-image' />
+          <h3>{bannerData.midText}</h3>
+          <h1>{bannerData.largeText1}</h1>
+          <img src={UrlFor(bannerData.image)} alt='sneakers' className='hero-banner-image' />
         </div>
 
         <div>
