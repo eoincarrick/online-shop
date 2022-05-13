@@ -49,8 +49,9 @@ a {
   position: absolute;
   white-space: nowrap;
   will-change: transform;
-  animation: marquee 15s linear infinite;
+  animation: marquee 21s linear infinite;
   width: 180%;
+  -webkit-animation: marquee 21s linear infinite;
 }
 .track:hover {
   animation-play-state: paused;
@@ -757,6 +758,7 @@ span.text-red {
   .track {
     animation: marquee 10s linear infinite;
     width: 550%;
+    -webkit-animation: marquee 10s linear infinite;
   }
   .success-wrapper,
   .cancel-wrapper {
