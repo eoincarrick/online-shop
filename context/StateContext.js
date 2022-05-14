@@ -10,10 +10,11 @@ export const StateContext = ({ children }) => {
   const [totalQuantities, setTotalQuantities] = useState(0);
   const [qty, setQty] = useState(1);
 
-  //   console.log(cartItems);
+  console.log(cartItems);
 
   const onAdd = (product, quantity) => {
     // @desc if the product has been already added in the cart.
+    // @desc "isProductAlreadyInCart" return a boolean
     const isProductAlreadyInCart = cartItems.find(
       (item) => item._id === product._id
     );
@@ -29,8 +30,10 @@ export const StateContext = ({ children }) => {
     );
 
     // @desc Updating the existing product in the cart already
+    // @desc "isProductAlreadyInCart" return a boolean
     if (isProductAlreadyInCart) {
       const updatedCartItems = cartItems.map((cartProduct) => {
+        console.log('cartProduct', cartProduct);
         if (cartProduct._id === product._id) {
           return {
             ...cartProduct,
@@ -77,6 +80,7 @@ export const StateContext = ({ children }) => {
 
   return (
     <Context.Provider
+      // Exporting this values to be used globally
       value={{
         showCart,
         setShowCart,

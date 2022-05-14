@@ -36,7 +36,7 @@ const Cart = () => {
           <span className='cart-num-items'>({totalQuantities} items)</span>
         </button>
 
-        {cartItems.length < 1 && (
+        {cartItems.length <= 0 && (
           <div className='empty-cart'>
             <AiOutlineShopping size={200} />
             <h3>Your shopping bag is empty</h3>
@@ -48,7 +48,48 @@ const Cart = () => {
           </div>
         )}
 
-        <div className='product-container'></div>
+        <div className='product-container'>
+          {cartItems.length >= 1 &&
+            cartItems.map((item, index) => (
+              <div className='product' key={item._id}>
+                <img
+                  src={urlFor(item?.image[0])}
+                  alt={item?.name}
+                  className='cart-product-image'
+                />
+                <div className='item-desc'>
+                  <div className='flex top'>
+                    <h5>{item.name}</h5>
+                    <h4>${item.price}</h4>
+                  </div>
+                  <div className='flex bottom'>
+                    <div>
+                      <p className='quantity-desc'>
+                        <span className='minus'>
+                          <AiOutlineMinus />
+                        </span>
+                        <span className='num'>{''}</span>
+                        <span className='plus'>
+                          <AiOutlinePlus />
+                        </span>
+                      </p>
+                    </div>
+                    <button type='button' className='remove-item'>
+                      <TiDeleteOutline />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+        {cartItems.length >= 1 && (
+          <div className='cart-bottom'>
+            <div className='total'>
+              <h3>Subtotal: </h3>
+              <h3>${totalPrice}</h3>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
