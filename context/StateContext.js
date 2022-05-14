@@ -4,18 +4,24 @@ import { toast } from 'react-hot-toast';
 const Context = createContext();
 
 export const StateContext = ({ children }) => {
+  // @desc this "showCart" is exported here and  used in '../components/Navbar.jsx'
   const [showCart, setShowCart] = useState(false);
+  // @desc this "cartItems" is exported here and  used in '../components/Cart.jsx'
   const [cartItems, setCartItems] = useState([]);
+  // @desc this "totalPrice" is exported here and  used in '../components/Cart.jsx'
   const [totalPrice, setTotalPrice] = useState(0);
+  // @desc this "totalQuantities" is exported here and  used in '../components/Cart.jsx' && '../components/Navbar.jsx'
   const [totalQuantities, setTotalQuantities] = useState(0);
+  // @desc this "qty" is exported here and  used in '../pages/product/[slug].js'
   const [qty, setQty] = useState(1);
 
   console.log(cartItems);
 
   const onAdd = (product, quantity) => {
-    // @desc if the product has been already added in the cart.
-    // @desc "isProductAlreadyInCart" return a boolean
+    // @desc checking if the "cartItems._id" === "product._id"
+    // @desc and the "find()" return the first element or product or items that meet the condition below.
     const isProductAlreadyInCart = cartItems.find(
+      // @desc "isProductAlreadyInCart" return a boolean
       (item) => item._id === product._id
     );
 
@@ -41,6 +47,7 @@ export const StateContext = ({ children }) => {
           };
         }
 
+        // @desc Updating cartItems by setting the "setCartItems" to "updatedCartItems"
         setCartItems(updatedCartItems);
       });
     } else {
@@ -88,7 +95,7 @@ export const StateContext = ({ children }) => {
 
   return (
     <Context.Provider
-      // Exporting this values to be used globally
+      // Exporting this values to be used globally or outside this state.
       value={{
         showCart,
         setShowCart,
