@@ -36,5 +36,10 @@ export default {
       title: 'Details',
       type: 'string',
     },
+    {
+      name: 'limit',
+      title: 'Product Limit',
+      type: 'number',
+    },
   ],
 };

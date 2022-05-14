@@ -8,12 +8,14 @@ import {
   AiOutlineStar,
 } from 'react-icons/ai';
 import { Product } from '../../components';
+import { useStateContext } from '../../context/StateContext';
 
 const ProductDetails = ({ slugProduct, products }) => {
   const [index, setIndex] = useState(0);
 
-  const { name, image, details, price } = slugProduct;
-  console.log(name);
+  const { onAdd, qty, increasedQuantity, decreaseQuantity } = useStateContext();
+
+  const { name, image, details, price, limit } = slugProduct;
   return (
     <div>
       <div className='product-detail-container'>
@@ -48,7 +50,7 @@ const ProductDetails = ({ slugProduct, products }) => {
               <AiFillStar />
               <AiOutlineStar />
             </div>
-            <p>(20)</p>
+            <p>{`(${limit})`}</p>
           </div>
           <h4>Details: </h4>
           <p>{details}</p>
@@ -56,20 +58,24 @@ const ProductDetails = ({ slugProduct, products }) => {
           <div className='quantity'>
             <h3>Quantity:</h3>
             <p className='quantity-desc'>
-              <span className='minus' onClick={``}>
+              <span className='minus' onClick={() => decreaseQuantity(limit)}>
                 <AiOutlineMinus />
               </span>
-              <span className='num'>{``}</span>
-              <span className='plus' onClick={``}>
+              <span className='num'>{qty}</span>
+              <span className='plus' onClick={() => increasedQuantity(limit)}>
                 <AiOutlinePlus />
               </span>
             </p>
           </div>
           <div className='buttons'>
-            <button type='button' className='add-to-cart' onClick={``}>
+            <button
+              type='button'
+              className='add-to-cart'
+              onClick={() => onAdd(slugProduct, qty)}
+            >
               Add to Cart
             </button>
-            <button type='button' className='buy-now' onClick={``}>
+            <button type='button' className='buy-now'>
               Buy Now
             </button>
           </div>
@@ -117,8 +123,6 @@ export const getStaticProps = async ({ params: { slug } }) => {
 
   const slugProduct = await client.fetch(slugQuery);
   const products = await client.fetch(productQuery);
-
-  console.log(slugProduct);
 
   return {
     props: {
