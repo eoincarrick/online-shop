@@ -54,11 +54,15 @@ export const StateContext = ({ children }) => {
   const increasedQuantity = (limit) => {
     setQty((previousQuantity) => {
       if (previousQuantity === limit) {
+        // @desc if the value match, we return an error, else return the limit,
+        // so the user cannot add more items to the cart.
         toast.error(`Sorry! Only ${limit} is Available`);
         return limit;
       } else if (previousQuantity > limit) {
+        // @desc if the value is greater than the limit we return the limit.
         return limit;
       }
+      // @desc and if the above code return "false", we want to add more items to the cart.
       return previousQuantity + 1;
       setQty(1);
     });
@@ -68,10 +72,14 @@ export const StateContext = ({ children }) => {
   const decreaseQuantity = (limit) => {
     setQty((previousQuantity) => {
       if (previousQuantity - 1 <= 0) {
+        // @desc if the value is less or equal to 0, if so, we return an 1
+        // so the user cannot add 0 or a negative number
         return 1;
       } else if (previousQuantity > limit) {
+        // @desc if the value is greater than the limit we return the limit.
         return limit;
       }
+      // @desc and if the above code return "false", we want to reduce more items to the cart.
       return previousQuantity - 1;
     });
   };
