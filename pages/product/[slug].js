@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { client, urlFor } from '../../library/client';
+import { toast } from 'react-hot-toast';
 
 import {
   AiOutlineMinus,
@@ -13,9 +14,16 @@ import { useStateContext } from '../../context/StateContext';
 const ProductDetails = ({ slugProduct, products }) => {
   const [index, setIndex] = useState(0);
 
-  const { onAdd, qty, increasedQuantity, decreaseQuantity } = useStateContext();
+  const {
+    onAdd,
+    qty,
+    increasedQuantity,
+    error,
+    decreaseQuantity,
+  } = useStateContext();
 
   const { name, image, details, price, limit } = slugProduct;
+
   return (
     <div>
       <div className='product-detail-container'>
@@ -50,7 +58,7 @@ const ProductDetails = ({ slugProduct, products }) => {
               <AiFillStar />
               <AiOutlineStar />
             </div>
-            <p>{`(${limit})`}</p>
+            <p>({limit})</p>
           </div>
           <h4>Details: </h4>
           <p>{details}</p>

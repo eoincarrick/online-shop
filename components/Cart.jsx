@@ -21,7 +21,9 @@ const Cart = () => {
     totalPrice,
     totalQuantities,
     cartItems,
+    onRemove,
     setShowCart,
+    toggleCartItemQuantity,
   } = useStateContext();
   return (
     <div className='cart-wrapper' ref={cartRef}>
@@ -65,16 +67,30 @@ const Cart = () => {
                   <div className='flex bottom'>
                     <div>
                       <p className='quantity-desc'>
-                        <span className='minus'>
+                        <span
+                          className='minus'
+                          onClick={() =>
+                            toggleCartItemQuantity(item._id, 'decrease')
+                          }
+                        >
                           <AiOutlineMinus />
                         </span>
-                        <span className='num'>{''}</span>
-                        <span className='plus'>
+                        <span className='num'>{item.quantity}</span>
+                        <span
+                          className='plus'
+                          onClick={() =>
+                            toggleCartItemQuantity(item._id, 'increase')
+                          }
+                        >
                           <AiOutlinePlus />
                         </span>
                       </p>
                     </div>
-                    <button type='button' className='remove-item'>
+                    <button
+                      type='button'
+                      className='remove-item'
+                      onClick={() => onRemove(item)}
+                    >
                       <TiDeleteOutline />
                     </button>
                   </div>
@@ -82,6 +98,7 @@ const Cart = () => {
               </div>
             ))}
         </div>
+
         {cartItems.length >= 1 && (
           <div className='cart-bottom'>
             <div className='total'>

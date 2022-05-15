@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 const Context = createContext();
 
 export const StateContext = ({ children }) => {
+  const [error, setError] = useState(false);
   // @desc this "showCart" is exported here and  used in '../components/Navbar.jsx'
   const [showCart, setShowCart] = useState(false);
   // @desc this "cartItems" is exported here and  used in '../components/Cart.jsx'
@@ -15,13 +16,15 @@ export const StateContext = ({ children }) => {
   // @desc this "qty" is exported here and  used in '../pages/product/[slug].js'
   const [qty, setQty] = useState(1);
 
-  console.log(cartItems);
+  let foundProduct;
+  let index;
 
   const onAdd = (product, quantity) => {
     // @desc checking if the "cartItems._id" === "product._id"
     // @desc and the "find()" return the first element or product or items that meet the condition below.
     const isProductAlreadyInCart = cartItems.find(
-      // @desc "isProductAlreadyInCart" return a boolean
+      // @desc "isProductAlreadyInCart" return a value
+      // @desc and in this case, it returns an Object
       (item) => item._id === product._id
     );
 
@@ -39,22 +42,77 @@ export const StateContext = ({ children }) => {
     // @desc "isProductAlreadyInCart" return a boolean
     if (isProductAlreadyInCart) {
       const updatedCartItems = cartItems.map((cartProduct) => {
-        console.log('cartProduct', cartProduct);
         if (cartProduct._id === product._id) {
+          console.log('found', cartProduct);
           return {
             ...cartProduct,
             quantity: cartProduct.quantity + quantity, // @desc Updating the quantity in the cart.
           };
+        } else {
+          console.log(`else returned ${cartProduct}`);
+          return { ...cartProduct, quantity: cartProduct.quantity + quantity };
         }
 
         // @desc Updating cartItems by setting the "setCartItems" to "updatedCartItems"
         setCartItems(updatedCartItems);
       });
     } else {
+      console.log(`shoot`);
       product.quantity = quantity;
       setCartItems([...cartItems, { ...product }]);
     }
     toast.success(`${qty} ${product.name} added to the cart.`);
+  };
+
+  const onRemove = (product) => {
+    foundProduct = cartItems.find((item) => item._id === product._id);
+    const newCartItems = cartItems.filter((item) => item._id !== product._id);
+
+    setTotalPrice(
+      (previousTotalPrice) =>
+        previousTotalPrice - foundProduct.price * foundProduct.quantity
+    );
+    setTotalQuantities(
+      (previousTotalQuantities) =>
+        previousTotalQuantities - foundProduct.quantity
+    );
+    setCartItems(newCartItems);
+  };
+
+  const toggleCartItemQuantity = (id, value) => {
+    foundProduct = cartItems.find((item) => item._id === id);
+    index = cartItems.findIndex(
+      (productPosition) => productPosition._id === id
+    );
+
+    console.log(index);
+    const newCartItems = cartItems.filter((item, i) => item._id !== id);
+
+    if (value === 'increase') {
+      foundProduct = { ...foundProduct, quantity: foundProduct.quantity + 1 };
+      newCartItems.splice(index, 0, foundProduct);
+      setCartItems([...newCartItems]);
+      setTotalPrice(
+        (previousTotalPrice) => previousTotalPrice + foundProduct.price
+      );
+
+      setTotalQuantities(
+        (previousTotalQuantities) => previousTotalQuantities + 1
+      );
+    } else if (value === 'decrease') {
+      if (foundProduct.quantity >= 1) {
+        foundProduct = { ...foundProduct, quantity: foundProduct.quantity - 1 };
+        newCartItems.splice(index, 0, foundProduct);
+        setCartItems([...newCartItems]);
+        setTotalPrice(
+          (previousTotalPrice) => previousTotalPrice - foundProduct.price
+        );
+
+        setTotalQuantities(
+          (previousTotalQuantities) => previousTotalQuantities - 1
+        );
+      }
+    }
   };
 
   // @desc Increasing the quantity of cart items.
@@ -63,7 +121,7 @@ export const StateContext = ({ children }) => {
       if (previousQuantity === limit) {
         // @desc if the value match, we return an error, else return the limit,
         // so the user cannot add more items to the cart.
-        toast.error(`Sorry! Only ${limit} is Available`);
+        setError(!error);
         return limit;
       } else if (previousQuantity > limit) {
         // @desc if the value is greater than the limit we return the limit.
@@ -71,7 +129,6 @@ export const StateContext = ({ children }) => {
       }
       // @desc and if the above code return "false", we want to add more items to the cart.
       return previousQuantity + 1;
-      setQty(1);
     });
   };
 
@@ -103,9 +160,13 @@ export const StateContext = ({ children }) => {
         totalPrice,
         totalQuantities,
         qty,
+        setError,
+        error,
         increasedQuantity,
         decreaseQuantity,
         onAdd,
+        onRemove,
+        toggleCartItemQuantity,
       }}
     >
       {children}

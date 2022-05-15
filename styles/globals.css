@@ -360,11 +360,35 @@ span.text-red {
   cursor: pointer;
 }
 .product-container {
+  /* margin-inline-end: 4rem; */
   margin-top: 15px;
   overflow: auto;
   max-height: 70vh;
   padding: 20px 10px;
+  overflow-x: hidden;
 }
+
+.product-container::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+/* Track */
+.product-container::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+.product-container::-webkit-scrollbar-thumb {
+  background: red;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.product-container::-webkit-scrollbar-thumb:hover {
+  background: #b30000;
+}
+
 .product {
   display: flex;
   gap: 30px;
