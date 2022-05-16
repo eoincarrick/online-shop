@@ -26,12 +26,12 @@ const ProductDetails = ({ slugProduct, products }) => {
 
   const { name, image, details, price, limit } = slugProduct;
 
-  const handleCheckout = async (qty) => {
+  const handleBuyNow = async (qty) => {
     const stripe = await getStripe();
     slugProduct.quantity = qty;
     slugProduct.price = slugProduct.price * qty;
 
-    const response = await fetch('/api/single-checkout', {
+    const res = await fetch('/api/stripe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,13 +39,13 @@ const ProductDetails = ({ slugProduct, products }) => {
       body: JSON.stringify(slugProduct),
     });
 
-    if (response.statusCode !== 200) return;
+    if (res.statusCode !== 200) return;
+
+    const product = await res.json();
 
     toast.loading('Redirecting...');
 
-    const data = await response.json();
-
-    stripe.redirectToCheckout({ sessionId: data.id });
+    stripe.redirectToCheckout({ sessionId: product.id });
   };
 
   return (
@@ -110,7 +110,7 @@ const ProductDetails = ({ slugProduct, products }) => {
             <button
               type='button'
               className='buy-now'
-              onClick={() => handleCheckout(qty)}
+              onClick={() => handleBuyNow(qty)}
             >
               Buy Now
             </button>
