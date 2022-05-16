@@ -36,7 +36,6 @@ const Cart = () => {
     const response = await fetch('/api/stripe', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(cartItems),

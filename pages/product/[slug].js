@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { client, urlFor } from '../../library/client';
 import { toast } from 'react-hot-toast';
+import NextCors from 'nextjs-cors';
 
 import {
   AiOutlineMinus,
@@ -10,6 +11,7 @@ import {
 } from 'react-icons/ai';
 import { Product } from '../../components';
 import { useStateContext } from '../../context/StateContext';
+import getStripe from '../../library/getStripe';
 
 const ProductDetails = ({ slugProduct, products }) => {
   const [index, setIndex] = useState(0);
@@ -23,6 +25,28 @@ const ProductDetails = ({ slugProduct, products }) => {
   } = useStateContext();
 
   const { name, image, details, price, limit } = slugProduct;
+
+  const handleCheckout = async (qty) => {
+    const stripe = await getStripe();
+    slugProduct.quantity = qty;
+    slugProduct.price = slugProduct.price * qty;
+
+    const response = await fetch('/api/single-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(slugProduct),
+    });
+
+    if (response.statusCode !== 200) return;
+
+    toast.loading('Redirecting...');
+
+    const data = await response.json();
+
+    stripe.redirectToCheckout({ sessionId: data.id });
+  };
 
   return (
     <div>
@@ -83,7 +107,11 @@ const ProductDetails = ({ slugProduct, products }) => {
             >
               Add to Cart
             </button>
-            <button type='button' className='buy-now'>
+            <button
+              type='button'
+              className='buy-now'
+              onClick={() => handleCheckout(qty)}
+            >
               Buy Now
             </button>
           </div>
