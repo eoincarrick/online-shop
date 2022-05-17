@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { client, urlFor } from '../../library/client';
 import { toast } from 'react-hot-toast';
-import NextCors from 'nextjs-cors';
+import axios from 'axios';
 
 import {
   AiOutlineMinus,
@@ -20,32 +20,15 @@ const ProductDetails = ({ slugProduct, products }) => {
     onAdd,
     qty,
     increasedQuantity,
-    error,
+    setShowCart,
     decreaseQuantity,
   } = useStateContext();
 
   const { name, image, details, price, limit } = slugProduct;
 
-  const handleBuyNow = async (qty) => {
-    const stripe = await getStripe();
-    slugProduct.quantity = qty;
-    slugProduct.price = slugProduct.price * qty;
-
-    const res = await fetch('/api/stripe', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(slugProduct),
-    });
-
-    if (res.statusCode !== 200) return;
-
-    const product = await res.json();
-
-    toast.loading('Redirecting...');
-
-    stripe.redirectToCheckout({ sessionId: product.id });
+  const handleBuyNow = async () => {
+    onAdd(slugProduct, qty);
+    setShowCart(true);
   };
 
   return (
