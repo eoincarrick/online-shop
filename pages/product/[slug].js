@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { client, urlFor } from '../../library/client';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 
 import {
   AiOutlineMinus,
@@ -11,10 +10,17 @@ import {
 } from 'react-icons/ai';
 import { Product } from '../../components';
 import { useStateContext } from '../../context/StateContext';
-import getStripe from '../../library/getStripe';
 
-const ProductDetails = ({ slugProduct, products }) => {
+const ProductDetails = ({ slugProduct, products, commentProduct }) => {
+  // Render post...
+  const displayComment = commentProduct.comments;
+
+  const [comments, setComments] = useState('');
+  const [names, setNames] = useState('');
   const [index, setIndex] = useState(0);
+
+  const authorNameEl = useRef();
+  const commentsEl = useRef();
 
   const {
     onAdd,
@@ -24,11 +30,49 @@ const ProductDetails = ({ slugProduct, products }) => {
     decreaseQuantity,
   } = useStateContext();
 
-  const { name, image, details, price, limit } = slugProduct;
+  const { _id, name, image, details, price, limit } = slugProduct;
 
   const handleBuyNow = async () => {
     onAdd(slugProduct, qty);
     setShowCart(true);
+  };
+
+  const handleOnSubmit = (event) => {
+    event.preventDefault();
+    setComments('');
+    setNames('');
+
+    const { value: authorName } = authorNameEl.current;
+    const { value: comment } = commentsEl.current;
+
+    const formObj = {
+      authorName,
+      comment,
+    };
+
+    const handlePostComment = async () => {
+      formObj._id = _id;
+
+      const response = await fetch('/api/comment', {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify(formObj),
+      });
+
+      if (response.statusCode !== 200) {
+        return;
+      }
+
+      const data = await response.json();
+    };
+    toast.success(
+      'Comment submitted. Refresh after one minutes to see the comment'
+    );
+    handlePostComment();
   };
 
   return (
@@ -111,6 +155,57 @@ const ProductDetails = ({ slugProduct, products }) => {
           </div>
         </div>
       </div>
+
+      <div className='formContainer'>
+        <form className='form' onSubmit={handleOnSubmit}>
+          <section className='inputContainer'>
+            <label>Name:</label>
+            <input
+              type='text'
+              placeholder='Enter name here'
+              name='authorName'
+              ref={authorNameEl}
+              value={names}
+              onChange={(event) => setNames(event.target.value)}
+            />
+          </section>
+          <section className='inputContainer'>
+            <label>Comment:</label>
+            <textarea
+              className='comment '
+              type='text'
+              placeholder='Enter name here'
+              name='comment'
+              ref={commentsEl}
+              value={comments}
+              onChange={(event) => setComments(event.target.value)}
+            />
+          </section>
+          <section>
+            <button type='submit' className='btn'>
+              Submit
+            </button>
+          </section>
+        </form>
+
+        {displayComment.length > 0 && (
+          <div className='commentSection'>
+            <div className='headerComment'>
+              <h1>Comment Section</h1>
+            </div>
+
+            <div className='comment'>
+              {displayComment.map((comment) => (
+                <div key={comment._id} className='commentCard'>
+                  <h3>{comment.authorName}</h3>
+                  <p>1st may 2202</p>
+                  <p>{comment.comment}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -132,21 +227,30 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: 'blocking',
+    fallback: true,
   };
 };
 
 export const getStaticProps = async ({ params: { slug } }) => {
+  // we destruct slug from params
+  // params contains the product `slug`.
+  // If the route is like /product/"sneakers", where  "sneakers" is the slug
   const slugQuery = `*[_type == "product" && slug.current == '${slug}'][0]`;
   const productQuery = '*[_type == "product"]';
+  const commentQuery = `*[_type == 'product' && slug.current == '${slug}'][0]{
+  'comments': *[_type == 'comment' && product._ref == ^._id]
+}`;
 
   const slugProduct = await client.fetch(slugQuery);
   const products = await client.fetch(productQuery);
+  const commentProduct = await client.fetch(commentQuery);
 
   return {
+    // Pass post data to the page via props
     props: {
       slugProduct,
       products,
+      commentProduct,
     },
   };
 };

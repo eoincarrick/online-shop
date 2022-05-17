@@ -41,5 +41,11 @@ export default {
       title: 'Product Limit',
       type: 'number',
     },
+    {
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [{ type: 'reference', to: { type: 'category' } }],
+    },
   ],
 };

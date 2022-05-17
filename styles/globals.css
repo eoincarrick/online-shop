@@ -806,3 +806,50 @@ span.text-red {
     margin: auto;
   }
 }
+
+.formContainer {
+  background-color: #ebebeb;
+  padding: 5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type='text'],
+textarea[type='text'] {
+  width: 20rem;
+  padding: 1rem;
+}
+
+textarea[type='text'] {
+  height: 5rem;
+  resize: none;
+}
+
+.commentSection {
+  border: 0.1rem solid #000;
+  height: auto;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.commentCard {
+  background-color: #999999;
+  height: auto;
+  padding: 1.5rem;
+}
