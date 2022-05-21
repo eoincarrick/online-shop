@@ -2,7 +2,10 @@ import Link from 'next/link';
 
 import { urlFor } from '../library/client';
 
-const HeroBanner = ({ bannerData }) => {
+import {client} from '../library/client'
+
+const HeroBanner = ({ bannerData, slugProduct }) => {
+  console.log('id', slugProduct);
   const {
     smallText,
     midText,
@@ -38,6 +41,26 @@ const HeroBanner = ({ bannerData }) => {
       </div>
     </div>
   );
+};
+
+export const getStaticProps = async ({ params: { slug } }) => {
+  const query = `*[_type == 'product' && references("${slug}")]{
+  price,
+  name,
+  limit,
+  details,
+}`;
+
+
+  const categoryProduct = await client.fetch(query);
+  const slugProduct = await client.fetch(slugs);
+
+  return {
+    props: {
+      categoryProduct,
+      slugProduct,
+    },
+  };
 };
 
 export default HeroBanner;

@@ -5,8 +5,9 @@ import banner from './banner';
 import product from './product';
 import comment from './comment';
 import category from './category';
+import views from './views';
 
 export default createSchema({
   name: 'default',
-  types: schemaTypes.concat([banner, product, comment, category]),
+  types: schemaTypes.concat([banner, product, comment, category, views]),
 });

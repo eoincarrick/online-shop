@@ -1,6 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { client, urlFor } from '../../library/client';
 import { toast } from 'react-hot-toast';
+
+import ReactImageMagnify from 'react-image-magnify';
 
 import {
   AiOutlineMinus,
@@ -11,9 +13,18 @@ import {
 import { Product } from '../../components';
 import { useStateContext } from '../../context/StateContext';
 
-const ProductDetails = ({ slugProduct, products, commentProduct }) => {
+const ProductDetails = ({
+  slugProduct,
+  slugProduct: {
+    slug: { current },
+  },
+  products,
+  commentProduct,
+}) => {
   // Render post...
-  const displayComment = commentProduct.comments;
+  const displayComment = commentProduct?.comments;
+
+  console.log(current);
 
   const [comments, setComments] = useState('');
   const [names, setNames] = useState('');
@@ -32,6 +43,8 @@ const ProductDetails = ({ slugProduct, products, commentProduct }) => {
 
   const { _id, name, image, details, price, limit } = slugProduct;
 
+  let count = 0;
+
   const handleBuyNow = async () => {
     onAdd(slugProduct, qty);
     setShowCart(true);
@@ -48,11 +61,10 @@ const ProductDetails = ({ slugProduct, products, commentProduct }) => {
     const formObj = {
       authorName,
       comment,
+      _id,
     };
 
     const handlePostComment = async () => {
-      formObj._id = _id;
-
       const response = await fetch('/api/comment', {
         method: 'POST',
 
@@ -75,15 +87,55 @@ const ProductDetails = ({ slugProduct, products, commentProduct }) => {
     handlePostComment();
   };
 
+  useEffect(() => {
+    const viewObj = { current, count, _id, name };
+
+    const getViewCount = async () => {
+      const response = await fetch('/api/views', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(viewObj),
+      });
+      const data = await response.json();
+    };
+    getViewCount();
+  }, []);
+
   return (
     <div>
       <div className='product-detail-container'>
         <div>
           <div className='image-container'>
-            <img
-              src={urlFor(image && image[index])}
-              className='product-detail-image'
-            />
+            <div className='imagesss'>
+              <img
+                src={urlFor(image && image[index])}
+                className='product-detail-image'
+              />
+            </div>
+
+            <div className='left_2'>
+              <ReactImageMagnify
+                {...{
+                  smallImage: {
+                    alt: 'Wristwatch by Ted Baker London',
+                    className: 'product-detail-image',
+                    isFluidWidth: true,
+                    src: urlFor(image[index]),
+                  },
+                  largeImage: {
+                    src: urlFor(image[index]),
+                    width: 1000,
+                    height: 1000,
+                  },
+                  // enlargedImageContainerDimensions: {
+                  //   width: '150%',
+                  //   height: '150%',
+                  // },
+                }}
+              />
+            </div>
           </div>
           <div className='small-images-container'>
             {image?.map((item, i) => (
@@ -117,11 +169,11 @@ const ProductDetails = ({ slugProduct, products, commentProduct }) => {
           <div className='quantity'>
             <h3>Quantity:</h3>
             <p className='quantity-desc'>
-              <span className='minus' onClick={() => decreaseQuantity(limit)}>
+              <span className='minus' onClick={decreaseQuantity}>
                 <AiOutlineMinus />
               </span>
               <span className='num'>{qty}</span>
-              <span className='plus' onClick={() => increasedQuantity(limit)}>
+              <span className='plus' onClick={increasedQuantity}>
                 <AiOutlinePlus />
               </span>
             </p>

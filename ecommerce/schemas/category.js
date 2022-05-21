@@ -25,10 +25,5 @@ export default {
         maxLength: 90,
       },
     },
-    {
-      name: 'product',
-      type: 'reference',
-      to: [{ type: 'product' }],
-    },
   ],
 };

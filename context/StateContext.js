@@ -65,8 +65,8 @@ export const StateContext = ({ children }) => {
   };
 
   const onRemove = (product) => {
-    foundProduct = cartItems.find((item) => item._id === product._id);
-    const newCartItems = cartItems.filter((item) => item._id !== product._id);
+    foundProduct = cartItems.find((item) => item._id === product._id); // @desc Finding a item or return a found item.
+    const newCartItems = cartItems.filter((item) => item._id !== product._id); // @desc For removing an item.
 
     setTotalPrice(
       (previousTotalPrice) =>
@@ -81,69 +81,42 @@ export const StateContext = ({ children }) => {
 
   const toggleCartItemQuantity = (id, value) => {
     foundProduct = cartItems.find((item) => item._id === id);
-    index = cartItems.findIndex(
-      (productPosition) => productPosition._id === id
-    );
-
-    console.log(index);
-    const newCartItems = cartItems.filter((item, i) => item._id !== id);
+    index = cartItems.findIndex((product) => product._id === id);
+    const newCartItems = cartItems.filter((item) => item._id !== id);
+    console.log('newCartItems', ...newCartItems);
 
     if (value === 'increase') {
-      foundProduct = { ...foundProduct, quantity: foundProduct.quantity + 1 };
-      newCartItems.splice(index, 0, foundProduct);
-      setCartItems([...newCartItems]);
-      setTotalPrice(
-        (previousTotalPrice) => previousTotalPrice + foundProduct.price
-      );
-
-      setTotalQuantities(
-        (previousTotalQuantities) => previousTotalQuantities + 1
-      );
+      console.log('increased');
+      setCartItems([
+        ...newCartItems,
+        { ...foundProduct, quantity: foundProduct.quantity + 1 },
+      ]);
+      setTotalPrice((prevTotalPrice) => prevTotalPrice + foundProduct.price);
+      setTotalQuantities((prevTotalQuantities) => prevTotalQuantities + 1);
     } else if (value === 'decrease') {
-      if (foundProduct.quantity >= 1) {
-        foundProduct = { ...foundProduct, quantity: foundProduct.quantity - 1 };
-        newCartItems.splice(index, 0, foundProduct);
-        setCartItems([...newCartItems]);
-        setTotalPrice(
-          (previousTotalPrice) => previousTotalPrice - foundProduct.price
-        );
-
-        setTotalQuantities(
-          (previousTotalQuantities) => previousTotalQuantities - 1
-        );
+      console.log('decreased');
+      if (foundProduct.quantity > 1) {
+        setCartItems([
+          ...newCartItems,
+          { ...foundProduct, quantity: foundProduct.quantity - 1 },
+        ]);
+        setTotalPrice((prevTotalPrice) => prevTotalPrice - foundProduct.price);
+        setTotalQuantities((prevTotalQuantities) => prevTotalQuantities - 1);
       }
     }
   };
 
   // @desc Increasing the quantity of cart items.
-  const increasedQuantity = (limit) => {
-    setQty((previousQuantity) => {
-      if (previousQuantity === limit) {
-        // @desc if the value match, we return an error, else return the limit,
-        // so the user cannot add more items to the cart.
-        setError(!error);
-        return limit;
-      } else if (previousQuantity > limit) {
-        // @desc if the value is greater than the limit we return the limit.
-        return limit;
-      }
-      // @desc and if the above code return "false", we want to add more items to the cart.
-      return previousQuantity + 1;
-    });
-  };
 
   // @desc Decreasing the quantity of cart items.
-  const decreaseQuantity = (limit) => {
+  const increasedQuantity = () => {
+    setQty((previousQuantity) => previousQuantity + 1);
+  };
+
+  const decreaseQuantity = () => {
     setQty((previousQuantity) => {
-      if (previousQuantity - 1 <= 0) {
-        // @desc if the value is less or equal to 0, if so, we return an 1
-        // so the user cannot add 0 or a negative number
-        return 1;
-      } else if (previousQuantity > limit) {
-        // @desc if the value is greater than the limit we return the limit.
-        return limit;
-      }
-      // @desc and if the above code return "false", we want to reduce more items to the cart.
+      if (previousQuantity - 1 < 1) return 1;
+
       return previousQuantity - 1;
     });
   };

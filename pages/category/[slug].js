@@ -1,45 +1,71 @@
 import React from 'react';
 
-import { client } from '../../library/client';
+import { Product } from '../../components/index';
 
-const categoryProduct = ({ categoryData }) => {
-  return <div>Hello</div>;
+import Link from 'next/link';
+
+import { client, urlFor } from '../../library/client';
+
+const categoryProduct = ({ categoryProduct, name }) => {
+  return (
+    <div className='maylike-products-container track'>
+      {categoryProduct.map((item, i) => (
+        <Product key={i} product={item} />
+      ))}
+    </div>
+  );
 };
 
-// export const getStaticPaths = async () => {
-//   const query = `*[_type == 'category']{
-//   slug{
-//       current
-//   }
-//  }
-// `;
+const style = {
+  display: 'flex',
+  // gridTemplateColumns: 'repeat(3, 1fr)',
+  // gridGap: '20px',
+  // placeContent: 'center',
+  // placeItems: 'center',
+};
+// {
+//   categoryProduct.map((item, i) => <Product key={i} product={item} />);
+// }
 
-//   const slug = await client.fetch(query);
-//   console.log(slug);
+export const getStaticPaths = async () => {
+  const slugs = `*[_type == 'product']{
+  categories[]{
+    _ref,
+  }
+}
+`;
+  const id = await client.fetch(slugs);
 
-//   const paths = slug.map((category) => ({
-//     params: { slug: category.slug.current },
-//   }));
+  const paths = id.map((product) => ({
+    params: {
+      slug: product.categories[0]._ref,
+    },
+  }));
 
-//   return {
-//     paths,
-//     fallback: 'blocking',
-//   };
-// };
+  return {
+    paths,
+    fallback: true,
+  };
+};
 
 export const getStaticProps = async ({ params: { slug } }) => {
-  const categoryQuery = `*[_type == 'category']{_id,image,name,slug{current}}`;
+  const query = `*[_type == 'product' && references("${slug}")]{
+  price,
+  image,
+  slug,
+  name,
+  limit,
+  details,
+}`;
 
-  const categoryData = await client.fetch(categoryQuery);
+  const categoryProduct = await client.fetch(query);
 
   return {
     props: {
-      categoryData,
-      categorySlug,
+      categoryProduct,
+      name: categoryProduct[0].name,
     },
   };
 };
 
 export default categoryProduct;
-
-// export const getStaticPaths = async () => {};

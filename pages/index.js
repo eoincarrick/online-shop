@@ -1,7 +1,10 @@
 import { Product, FooterBanner, HeroBanner } from '../components';
 import { client } from '../library/client';
 
-const Home = ({ products, bannerData }) => {
+const Home = ({ products, bannerData, product }) => {
+  const data = product.map((category) =>
+    console.log(category.categories[0]._ref)
+  );
   return (
     <>
       <HeroBanner bannerData={bannerData.length && bannerData[0]} />
@@ -21,7 +24,14 @@ const Home = ({ products, bannerData }) => {
 
 export const getServerSideProps = async () => {
   const productQuery = '*[_type =="product"]';
+  const slugs = `*[_type == 'product']{
+  categories[]{
+    _ref,
+  }
+}
+`;
   const products = await client.fetch(productQuery);
+  const product = await client.fetch(slugs);
 
   const bannerQuery = '*[_type == "banner"]';
   const banner = await client.fetch(bannerQuery);
@@ -30,6 +40,7 @@ export const getServerSideProps = async () => {
     props: {
       products,
       bannerData: banner,
+      product,
     },
   };
 };

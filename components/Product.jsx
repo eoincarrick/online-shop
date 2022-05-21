@@ -2,7 +2,8 @@ import Link from 'next/link';
 
 import { urlFor } from '../library/client';
 
-const Product = ({ product: { image, name, slug, price } }) => {
+const Product = ({ product }) => {
+  const { image, name, slug, price } = product;
   return (
     <div>
       <Link href={`/product/${slug.current}`}>

@@ -63,7 +63,7 @@ const Cart = () => {
           <span className='cart-num-items'>({totalQuantities} items)</span>
         </button>
 
-        {cartItems.length <= 0 && (
+        {cartItems.length < 1 && (
           <div className='empty-cart'>
             <AiOutlineShopping size={200} />
             <h3>Your shopping bag is empty</h3>
@@ -77,11 +77,10 @@ const Cart = () => {
 
         <div className='product-container'>
           {cartItems.length >= 1 &&
-            cartItems.map((item, index) => (
+            cartItems.map((item) => (
               <div className='product' key={item._id}>
                 <img
                   src={urlFor(item?.image[0])}
-                  alt={item?.name}
                   className='cart-product-image'
                 />
                 <div className='item-desc'>

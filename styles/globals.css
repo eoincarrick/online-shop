@@ -11,6 +11,17 @@ body,
   width: 0px;
 }
 
+.imagesss {
+  display: none;
+}
+
+.left_2 {
+  width: 500px;
+  height: 100%;
+  object-fit: contain;
+  z-index: 10000;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -695,6 +706,20 @@ span.text-red {
   .banner-desc .right h3 {
     font-size: 45px;
   }
+  .imagesss {
+    display: block;
+  }
+
+  .left_2 {
+    width: 500px;
+    height: 100%;
+    object-fit: contain;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    display: none;
+  }
+
   .banner-desc .right p {
     font-size: 18px;
   }
